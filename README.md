@@ -1,1 +1,1 @@
-# ssai-ko
+# ssai
