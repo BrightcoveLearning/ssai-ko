@@ -1,0 +1,465 @@
+
+---
+title: 비디오 클라우드 SSAI 광고 태그 유효성 검사
+description:이 주제에서는 SSAI (서버 측 광고 삽입) 로 지정된 광고 호출을 추적하는 방법을 알아봅니다.
+parent: Video-On-Demand Guides
+---
+
+<!-- 
+  This content appears on:
+
+  https://player.support.brightcove.com/advertising/video-cloud-ssai-ad-tag-validation.html
+
+  If you update in one place, you MUST update it in all!
+ -->
+<h1>{{ page.title }}</h1>
+<article class="bcls-article">
+  <summary>{{ page.description }}</summary>
+
+  <section class="bcls-section">
+    <h2 id="Overview">개요</h2>
+    <p>서버 측 광고의 디버깅을 돕기 위해 SSAI를 사용한 Dynamic Delivery는 광고 호출을 추적하는 API 엔드 포인트를 제공합니다.</p>
+    <aside class="bcls-aside bcls-aside--information">메모:
+      <ul>
+        <li>SSAI를 사용하려면 Video Cloud 계정을 다음과 같이 구성해야합니다. <a href="https://studio.support.brightcove.com/general/overview-dynamic-delivery.html">동적 전달</a> SSAI에 대해 활성화됩니다. 이 기능을 사용하려면 계정 관리자에게 문의하세요.</li>
+        <li>이 디버깅 인터페이스는 VOD SSAI 전용입니다.</li>
+        <li>제한 사항 목록은<a href="https://ssai.support.brightcove.com/getting-started/video-cloud-ssai-overview.html#Limitations"> SSAI 개요</a>문서를 참조하십시오.</li>
+      </ul>
+    </aside>
+    <!-- <aside class="bcls-aside bcls-aside--information">SSAI logging is session based and uses parameters for a particular session. It’s critical to test in an environment that best represents your needs to debug including, geography, page variables, playback device, etc.</aside> -->
+    
+    <p>Video Cloud에 저장된 비디오 콘텐츠로 서버 측 광고를 디버깅하려면 다음 단계를 따르십시오.</p>
+    <ol class="bcls-tasklist__restart">
+      <li><a href="#General_information">API 경로 및 권한에 대한 일반 정보 검토</a></li>
+      <li><a href="#Run_a_trace_for_an_ad_configuration">광고 구성에 대한 추적 실행</a></li>
+      <li><a href="#Retrieve_trace_details">추적 세부 사항 검색</a></li>
+    </ol>
+  </section>
+  <section class="bcls-section">
+    <h2 id="General_information">일반 정보</h2>
+    <p>다음 정보는 모든 SSAI API 요청에 적용됩니다.</p>
+    <h3>기본 URL</h3>
+    <p>SSAI API의 기본 URL은 다음과 같습니다.</p>
+    <pre class="line-numbers">
+  <code class="language-http" translate="No">https://ssai.api.brightcove.com/v1</code></pre>
+    <h4>계정 경로</h4>
+    <p>모든 경우에 특정 Video Cloud 계정에 대한 요청이 이루어집니다. 따라서 항상 용어<code translate="No">accounts</code>뒤에 계정 ID를 기본 URL에 추가합니다.</p>
+    <pre class="line-numbers">
+  <code class="language-http" translate="No">https://ssai.api.brightcove.com/v1<strong>/accounts/</strong><span class="bcls-input">your account id</span></code></pre>
+    <h3>권한 부여</h3>
+    <p>API 요청에는 Authorization 헤더가 필요합니다.</p>
+    <pre class="line-numbers">
+  <code class="language-http" translate="No">Authorization: Bearer <span class="bcls-input">your access token</span></code></pre>
+    <p><code translate="No">access_token</code>는 브라이트코브 OAuth 서비스에서 가져와야 하는 임시 OAuth2 액세스 토큰입니다. 클라이언트 자격 증명을 얻고 액세스 토큰을 검색하는 데 사용하는 방법에 대한 자세한 내용은<a href="https://apis.support.brightcove.com/oauth/getting-started/overview-oauth-api-v4.html">브라이트코브 OAuth 개요를 참조하십시오</a> .</p>
+    <h3>운영</h3>
+    <p>클라이언트 자격 증명을 요청할 때 원하는 계정 액세스 또는 작업 유형을 지정해야합니다. 다음은 SSAI API에 대해 현재 지원되는 작업 목록입니다.</p>
+    <ul>
+      <li>SSAI 데이터:
+        <p><code translate="No">video-cloud/ssai/read</code><br />
+          <code translate="No">video-cloud/ssai/all</code></p>
+      </li>
+    </ul>
+  </section>
+  <section class="bcls-section">
+    <h2 id="Run_a_trace_for_an_ad_configuration">광고 구성에 대한 추적 실행</h2>
+    <p>광고 구성에 대한 추적을 실행하려면 다음 단계를 따르세요.</p>
+    <h3>정보를 수집하다</h3>
+    <p>API 요청<strong>본문에</strong>대해 다음 정보를 수집합니다.</p>
+    <table class="bcls-table">
+      <thead class="bcls-table__head">
+        <tr>
+          <th>매개 변수</th>
+          <th>유형</th>
+          <th>기술</th>
+        </tr>
+      </thead>
+      <tbody class="bcls-table__body">
+        <tr>
+          <td><code translate="No">account_id</code></td>
+          <td>끈</td>
+          <td>사용자 계정 ID</td>
+        </tr>
+        <tr>
+          <td><code translate="No">playback_config</code></td>
+          <td>목적</td>
+          <td>필드는 SSAI API 문서의<a href="https://ssai.support.brightcove.com/vod/guides/video-cloud-ssai-ad-config-api.html#Configuration_field_details">구성 필드 세부 정보</a>섹션에서 정의됩니다.</td>
+        </tr>
+        <tr>
+          <td><code translate="No">title_metadata</code></td>
+          <td>목적</td>
+          <td>올바른 광고 응답을 생성하기 위해 콘텐츠의 길이를 시스템에 알려줍니다.<br />
+            <br />
+            예를 들어 다음은 콘텐츠 길이가 1분임을 시스템에 알립니다. 그에 따라 광고를 삽입하는 데 사용됩니다.
+            <pre>
+  <code class="language-json" translate="No">"title_metadata": {  "duration": "1m" }</code></pre></td>
+        </tr>
+        <tr>
+          <td><code translate="No">videocloud_metadata</code></td>
+          <td>목적</td>
+          <td>선택 사항입니다.<br />
+            메타데이터 필드를 참조하는 템플릿 변수를 사용하는 경우에만 필요합니다. SSAI API 문서의<a href="https://ssai.support.brightcove.com/vod/guides/video-cloud-ssai-ad-config-api.html#Ad_variables">광고 변수</a>섹션에 정의되어 있습니다.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>의뢰</h3>
+    <p>SSAI 광고 구성에 대한 추적을 만듭니다.</p>
+    <table class="bcls-table">
+      <tbody class="bcls-table__body">
+        <tr>
+          <th>방법</th>
+          <td>게시하다</td>
+        </tr>
+        <tr>
+          <th>URL</th>
+          <td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">{account_id}</span> /ssai_debug_vmap/debug.xml</td>
+        </tr>
+        <tr>
+          <th rowspan="2">헤더</th>
+          <td>권한 부여: 베어러<span class="bcls-input">액세스_토큰</span> (액세스 토큰<a href="https://apis.support.brightcove.com/oauth/guides/getting-access-tokens.html">가져오기 참조</a> )</td>
+        </tr>
+        <tr>
+          <td>콘텐츠 유형: 응용 프로그램/json</td>
+        </tr>
+        <tr>
+          <th>샘플 바디</th>
+          <td><pre>
+  <code translate="No">{
+    "playback_config":{
+      "name": "<span class="bcls-input">config_name</span>",
+      "vmap_response_namespace": "<span class="bcls-input">config_namespace</span>",
+      "account_id": "<span class="bcls-input">account_id</span>",
+      "ad_config": {
+        "enable_ads": true,
+        "expected_ad_response": "dfp_ad_rules",
+        "disable_server_beacons": false,
+        "round_up_cue_points": false,
+        "template_url": {
+        "template": "<span class="bcls-input">template_url</span>"
+        }
+      },
+      "extend_beacon_guard_ttl": false
+    },
+    "title_metadata":{
+      "duration": "39s"
+    }
+  }</code></pre></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>응답</h3>
+    <p>응답은 VAST 또는 광고 서버 상응하는 응답을 포함하는 광고 서버 응답으로<code translate="No">body</code>구성됩니다.</p>
+    <p>샘플 응답:</p>
+    <pre class="line-numbers">
+  <code class="language-xml" translate="No">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+  &lt;vmap:VMAP xmlns:bc="bc" xmlns:vmap="http://www.iab.net/vmap-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"&gt;
+    &lt;vmap:Extensions&gt;
+      &lt;bc:Brightcove ttl="1800" contenturi="https://ssaiplayback.us-east-1.prod.boltdns.net/playback/once/v1/hls/v5/clear/1752604059001/debug/debug/195b46a6-f71b-432d-af0a-60c7f2131a7e/debug.m3u8?bc_token=NWIxNmQ4YWFfMzMwMzllMzIwMmZlYjRkNmJhY2ZkMWZiN2Y2NGQwOWVkZTYxYTBiOThhZmEwMTdkZjc5NjEzNGFkZDdiYTFjYw%3D%3D"
+      contentlength="39.0000" payloadlength="67.0000" contenttype="application/x-mpegURL"&gt;&lt;/bc:Brightcove&gt;
+      &lt;bc:BrightcoveDebug sessionID="195b46a6-f71b-432d-af0a-60c7f2131a7e"&gt;&lt;/bc:BrightcoveDebug&gt;
+    &lt;/vmap:Extensions&gt;
+    &lt;vmap:AdBreak breakType="linear" breakId="MidRoll_5_0" timeOffset="00:00:05.0000"&gt;
+      &lt;vmap:AdSource allowMultipleAds="true" followRedirects="true" id="0"&gt;
+        &lt;vmap:VASTData&gt;
+          &lt;VAST xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+            &lt;Ad id="2"&gt;
+              &lt;InLine&gt;
+                &lt;AdSystem&gt;Test Ad Server&lt;/AdSystem&gt;
+                &lt;AdTitle&gt;&amp;#xA; Marketing&amp;#xA;&lt;/AdTitle&gt;
+                &lt;Description&gt;&amp;#xA; Demo ad number 4&amp;#xA;&lt;/Description&gt;
+                &lt;Error&gt;&amp;#xA; &amp;#xA;&lt;/Error&gt;
+                &lt;Creatives&gt;
+                  &lt;Creative&gt;
+                    &lt;Linear skipoffset="00:00:05"&gt;
+                      &lt;CreativeExtensions&gt;
+                        &lt;CreativeExtension&gt;
+                          &lt;BrightcoveForeignKey&gt;2&lt;/BrightcoveForeignKey&gt;
+                        &lt;/CreativeExtension&gt;
+                      &lt;/CreativeExtensions&gt;
+                      &lt;Duration&gt;00:00:12.0000&lt;/Duration&gt;
+                      &lt;AdParameters&gt;&amp;#xA; &amp;lt;xml&amp;gt;&amp;lt;/xml&amp;gt;&amp;#xA;&lt;/AdParameters&gt;
+                      &lt;VideoClicks&gt;&lt;/VideoClicks&gt;
+                    &lt;/Linear&gt;
+                  &lt;/Creative&gt;
+                &lt;/Creatives&gt;
+                &lt;Extensions&gt;
+                  &lt;Extension&gt;
+                    &lt;xml&gt;data&lt;/xml&gt;
+                  &lt;/Extension&gt;
+                &lt;/Extensions&gt;
+              &lt;/InLine&gt;
+            &lt;/Ad&gt;
+          &lt;/VAST&gt;
+        &lt;/vmap:VASTData&gt;
+      &lt;/vmap:AdSource&gt;
+    &lt;/vmap:AdBreak&gt;
+    ...// additional ad breaks
+  &lt;/vmap:VMAP&gt;
+  </code></pre>
+    <h3>Request2-템플릿 변수 사용</h3>
+    <p>메타 데이터 필드를 참조하는 템플릿 변수를 사용하는 SSAI 광고 추적을 만듭니다.</p>
+    <table class="bcls-table">
+      <tbody class="bcls-table__body">
+        <tr>
+          <th>방법</th>
+          <td>게시하다</td>
+        </tr>
+        <tr>
+          <th>URL</th>
+          <td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">{account_id}</span> /ssai_debug_vmap/debug.xml</td>
+        </tr>
+        <tr>
+          <th rowspan="2">헤더</th>
+          <td>권한 부여: 베어러<span class="bcls-input">액세스_토큰</span> (액세스 토큰<a href="https://apis.support.brightcove.com/oauth/guides/getting-access-tokens.html">가져오기 참조</a> )</td>
+        </tr>
+        <tr>
+          <td>콘텐츠 유형: 응용 프로그램/json</td>
+        </tr>
+        <tr>
+          <th>샘플 바디</th>
+          <td><pre>
+  <code translate="No">{
+    "playback_config":{
+      "name": "<span class="bcls-input">config_name</span>",
+      "vmap_response_namespace": "<span class="bcls-input">config_namespace</span>",
+      "account_id": "<span class="bcls-input">account_id</span>",
+      "ad_config": {
+        "enable_ads": true,
+        "expected_ad_response": "dfp_ad_rules",
+        "disable_server_beacons": false,
+        "round_up_cue_points": false,
+        "template_url": {
+        "template": "<span class="bcls-input">template_url</span>"
+        }
+      },
+      "extend_beacon_guard_ttl": false
+    },
+    "title_metadata":{
+    "duration": "10s"
+    },
+    "videocloud_metadata": {
+      "name": "<span class="bcls-input">ad_name</span>",
+      "tags": [ "<span class="bcls-input">tag1:tag1_value</span>", "<span class="bcls-input">tag2:tag2_value</span>" ],
+      "ad_keys":"a=1&amp;b=2",
+      "cue_points": [{
+        "name":"Pre-roll",
+        "type":"AD",
+        "time":0,
+        "metadata":"type:pre-roll,a=b",
+        },
+        {
+        "name":"Mid-roll",
+        "type":"AD",
+        "time":10,
+        "metadata":"type=mid-roll,x=y",
+      }]
+    }
+  }</code></pre></td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- <aside class="bcls-aside bcls-aside--information">For data definitions within the <code translate="No">videocloud_metadata</code> object, see the <a href="http://docs.brightcove.com/en/staging/ssai-api.html#Metadata_variables">Metadata variables</a> section of the Video Cloud SSAI Ad Config API document.</aside> --><!-- <aside class="bcls-aside bcls-aside--information">Be sure to validate any server-side macros that they are correctly inserting values to that URL.</aside> -->
+    
+    <h3>응답 2</h3>
+    <p>샘플 응답:</p>
+    <pre class="line-numbers">
+  <code class="language-xml" translate="No">&lt;vmap:VMAP xmlns:bc="bc" xmlns:vmap="http://www.iab.net/vmap-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"&gt;
+  &lt;vmap:Extensions&gt;
+  &lt;bc:Brightcove ttl="1800" contenturi="https://ssaiplayback.us-east-1.qa.boltdns.net/playback/once/v1/hls/v5/clear/accoutn_debug/debug/debug/7592e9c3-214f-4c68-a576-1e2494b7be06/debug.m3u8" contentlength="10.0000" payloadlength="70.0000" contenttype="application/x-mpegURL"&gt;&lt;/bc:Brightcove&gt;
+  &lt;bc:BrightcoveDebug sessionID="7592e9c3-214f-4c68-a576-1e2494b7be06"&gt;&lt;/bc:BrightcoveDebug&gt;
+  &lt;/vmap:Extensions&gt;
+  &lt;vmap:AdBreak breakType="linear" breakId="PreRoll_0_0" timeOffset="start"&gt;
+  &lt;vmap:AdSource allowMultipleAds="true" followRedirects="true" id="0"&gt;
+  &lt;vmap:VASTData&gt;
+    &lt;VAST xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+      &lt;Ad id="test-01-30s"&gt;
+        &lt;InLine&gt;
+          &lt;AdSystem&gt;BIAS&lt;/AdSystem&gt;
+          &lt;AdTitle&gt;test-01-30s&lt;/AdTitle&gt;
+          &lt;Creatives&gt;
+            &lt;Creative&gt;
+              &lt;Linear&gt;
+                &lt;CreativeExtensions&gt;
+                  &lt;CreativeExtension&gt;
+                    &lt;BrightcoveForeignKey&gt;test-01-30s&lt;/BrightcoveForeignKey&gt;
+                  &lt;/CreativeExtension&gt;
+                &lt;/CreativeExtensions&gt;
+                &lt;Duration&gt;00:00:30.0000&lt;/Duration&gt;
+                &lt;TrackingEvents&gt;
+                  &lt;Tracking event="mute"&gt;https://solutions.brightcove.com/beacon?event=mute&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                  &lt;Tracking event="unmute"&gt;https://solutions.brightcove.com/beacon?event=unmute&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                  &lt;Tracking event="rewind"&gt;https://solutions.brightcove.com/beacon?event=rewind&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                  &lt;Tracking event="pause"&gt;https://solutions.brightcove.com/beacon?event=pause&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                  &lt;Tracking event="resume"&gt;https://solutions.brightcove.com/beacon?event=resume&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                  &lt;Tracking event="fullscreen"&gt;https://solutions.brightcove.com/beacon?event=fullscreen&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                  &lt;Tracking event="acceptInvitation"&gt;https://solutions.brightcove.com/beacon?event=acceptInvitation&amp;amp;type=vast&amp;amp;request_id=43a0e4a5-4420-11e8-b306-99b1b6ae5164&amp;amp;parent_request_id=436ae081-4420-11e8-bd7f-41361f814644&amp;amp;ad_id=test-01-30s&lt;/Tracking&gt;
+                &lt;/TrackingEvents&gt;
+                &lt;VideoClicks&gt;
+                  &lt;ClickThrough id="clickthrough"&gt;https://www.brightcove.com/en/&lt;/ClickThrough&gt;
+                  &lt;ClickTracking id="43a0e4a5-4420-11e8-b306-99b1b6ae5164"&gt;&lt;/ClickTracking&gt;
+                &lt;/VideoClicks&gt;
+              &lt;/Linear&gt;
+            &lt;/Creative&gt;
+          &lt;/Creatives&gt;
+        &lt;/InLine&gt;
+      &lt;/Ad&gt;
+    &lt;/VAST&gt;
+  &lt;/vmap:VASTData&gt;
+  &lt;/vmap:AdSource&gt;
+  &lt;/vmap:AdBreak&gt;
+  ...// additional ad breaks
+  &lt;/vmap:VMAP&gt;
+  </code></pre>
+  </section>
+  <section class="bcls-section">
+    <h2 id="Retrieve_trace_details">추적 세부 사항 검색</h2>
+    <p>이전 섹션에 표시된대로 광고 추적을 실행하면 세션 ID를 사용하여 추적에 대한 자세한 정보를 검색 할 수 있습니다.</p>
+    <p>는 캐싱 세션을<code translate="No">session_id</code>지정합니다. 각 세션에는 비디오 콘텐츠 길이에 따라 자체 길이가 있습니다. 이전 단계의 API 호출에 대한 응답에서 ID를 가져올 수 있습니다.</p>
+    <p>세션 ID는 이전 섹션의 VMAP 응답에서 찾을 수 있습니다. 다음은 그 예입니다.</p>
+    <pre>
+  <code class="language-xml" translate="No">&lt;bc:BrightcoveDebug sessionID="<span class="bcls-input">your session id</span>"&gt;&lt;/bc:BrightcoveDebug&gt;</code></pre>
+    <h3>의뢰</h3>
+    <p>세션 ID를 제공하여 광고 호출 추적 정보를 검색하려면 다음과 유사한 GET 요청을 사용하십시오.</p>
+    <table class="bcls-table">
+      <tbody class="bcls-table__body">
+        <tr>
+          <th>방법</th>
+          <td>가져 오기</td>
+        </tr>
+        <tr>
+          <th>URL</th>
+          <td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">{account_id}</span> /사이_트레이스/ <span class="bcls-input">{session_id}</span> /ad_호출</td>
+        </tr>
+        <tr>
+          <th rowspan="2">헤더</th>
+          <td>권한 부여: 베어러<span class="bcls-input">액세스_토큰</span> (액세스 토큰<a href="https://apis.support.brightcove.com/oauth/guides/getting-access-tokens.html">가져오기 참조</a> )</td>
+        </tr>
+        <tr>
+          <td>콘텐츠 유형: 응용 프로그램/json</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- <aside class="bcls-aside bcls-aside--information">Be sure to validate any server-side macros that they are correctly inserting values to that URL.</aside> -->
+    
+    <h3>응답</h3>
+    <p>샘플 응답:</p>
+    <pre class="line-numbers">
+  <code class="language-json" translate="No">{
+    "ad_calls": [
+      {
+        "timestamp": "2019-01-29T16:25:57.775607279Z",
+        "duration_ms": 2772.666305,
+        "request": {
+          "content_length": 0,
+          "event": "request",
+          "headers": {
+            "Referer": [
+              ""
+            ],
+            "User-Agent": [
+              "insomnia/6.3.2"
+            ],
+            "X-Device-User-Agent": [
+              "insomnia/6.3.2"
+            ],
+            "X-Forwarded-For": [
+              "108.26.214.36, 3.89.139.168"
+            ]
+          },
+          "method": "GET",
+          "url": "https://solutions.brightcove.com/bcls/brightcove-player/vmap/simple-vmap.xml"
+        },
+        "response": {
+          "content_length": -1,
+          "event": "response",
+          "headers": {
+            "Accept-Ranges": [
+              "bytes"
+            ],
+            "Access-Control-Allow-Credentials": [
+              "true"
+            ],
+            "Access-Control-Allow-Headers": [
+              "X-Requested-With"
+            ],
+            "Access-Control-Allow-Origin": [
+              "*"
+            ],
+            "Content-Type": [
+              "application/xml"
+            ],
+            "Date": [
+              "Tue, 29 Jan 2019 16:25:57 GMT"
+            ],
+            "Etag": [
+              "\"13d6-57baaddddeea0-gzip\""
+            ],
+            "Last-Modified": [
+              "Tue, 27 Nov 2018 19:58:00 GMT"
+            ],
+            "Server": [
+              "Apache/2.4.7 (Ubuntu)"
+            ],
+            "Vary": [
+              "Accept-Encoding"
+            ]
+          },
+          "status_code": 200
+        },
+        "body": "PHZtYXA6Vk1BUCB4bWxuczp2bWFwPSJodHRwOi8vd3d3LmlhYi5uZXQvdmlkZW9zdWl0ZS92bWFwIiB2ZXJzaW9uPSIxLjAiPgoKICA8dm1hcDpBZEJyZWFrIHRpbWVPZmZzZXQ9InN0YXJ0IiBicmVha1R5cGU9ImxpbmVhciIgYnJlYWtJZD0icHJlcm9sbCI+CiAgICA8dm1hcDpBZFNvdXJjZSBpZD0icHJlcm9sbC1hZCIgYWxsb3dNdWx0aXBsZUFkcz0iZmFsc2UiIGZvbGxvd1JlZGlyZWN0cz0idHJ1ZSI+CiAgICAgIDx2bWFwOlZBU1RBZERhdGE+CiAgICAgICAgPFZBU1QgdmVyc2lvbj0iMy4wIj4KICAgICAgICAgIDxBZCBpZD0iMSI+CiAgICAgICAgICAgIDxJbkxpbmU+CiAgICAgICAgICAgICAgPEFkU3lzdGVtIHZlcnNpb249IjEuMCI+VGVzdCBBZCBTZXJ2ZXI8L0FkU3lzdGVtPgogICAgICAgICAgICAgIDxBZFRpdGxlPgogICAgICAgICAgICAgICAgPCFbQ0RBVEFbUG9ydGFsc11dPgogICAgICAgICAgICAgIDwvQWRUaXRsZT4KICAgICAgICAgICAgICA8RGVzY3JpcHRpb24+CiAgICAgICAgICAgICAgICA8IVtDREFUQVtEZW1vIGFkIG51bWJlciA2XV0+CiAgICAgICAgICAgICAgPC9EZXNjcmlwdGlvbj4KICAgICAgICAgICAgICA8RXJyb3I+CiAgICAgICAgICAgICAgICA8IVtDREFUQVtdXT4KICAgICAgICAgICAgICA8L0Vycm9yPgogICAgICAgICAgICAgIDxDcmVhdGl2ZXM+CiAgICAgICAgICAgICAgICA8Q3JlYXRpdmU+CiAgICAgICAgICAgICAgICAgIDxMaW5lYXI+CiAgICAgICAgICAgICAgICAgICAgPER1cmF0aW9uPjAwOjAwOjg8L0R1cmF0aW9uPgogICAgICAgICAgICAgICAgICAgIDxUcmFja2luZ0V2ZW50cy8+CiAgICAgICAgICAgICAgICAgICAgPEFkUGFyYW1ldGVycz4KICAgICAgICAgICAgICAgICAgICAgIDwhW0NEQVRBWzx4bWw+PC94bWw+XV0+CiAgICAgICAgICAgICAgICAgICAgPC9BZFBhcmFtZXRlcnM+CiAgICAgICAgICAgICAgICAgICAgPFZpZGVvQ2xpY2tzLz4KICAgICAgICAgICAgICAgICAgICA8TWVkaWFGaWxlcz4KICAgICAgICAgICAgICAgICAgICAgIDxNZWRpYUZpbGUgdHlwZT0idmlkZW8vbXA0IiB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIGRlbGl2ZXJ5PSJwcm9ncmVzc2l2ZSIgaWQ9IjIiIGJpdHJhdGU9IjQzMTYiIG1pbkJpdHJhdGU9IjMyMCIgbWF4Qml0cmF0ZT0iMzIwIiBzY2FsYWJsZT0idHJ1ZSIgbWFpbnRhaW5Bc3BlY3RSYXRpbz0idHJ1ZSI+CiAgICAgICAgICAgICAgICAgICAgICAgIDwhW0NEQVRBW2h0dHBzOi8vc29sdXRpb25zLmJyaWdodGNvdmUuY29tL2JjbHMvYWRzL2JjLWFkcy9iY2xzLWFkLTYtNXNlY29uZHMubXA0XV0+CiAgICAgICAgICAgICAgICAgICAgICA8L01lZGlhRmlsZT4KICAgICAgICAgICAgICAgICAgICA8L01lZGlhRmlsZXM+CiAgICAgICAgICAgICAgICAgIDwvTGluZWFyPgogICAgICAgICAgICAgICAgPC9DcmVhdGl2ZT4KICAgICAgICAgICAgICA8L0NyZWF0aXZlcz4KICAgICAgICAgICAgICA8RXh0ZW5zaW9ucz4KICAgICAgICAgICAgICAgIDxFeHRlbnNpb24+CiAgICAgICAgICAgICAgICAgIDx4bWw+ZGF0YTwveG1sPgogICAgICAgICAgICAgICAgPC9FeHRlbnNpb24+CiAgICAgICAgICAgICAgPC9FeHRlbnNpb25zPgogICAgICAgICAgICA8L0luTGluZT4KICAgICAgICAgIDwvQWQ+CiAgICAgICAgPC9WQVNUPgogICAgICA8L3ZtYXA6VkFTVEFkRGF0YT4KICAgIDwvdm1hcDpBZFNvdXJjZT4KICA8L3ZtYXA6QWRCcmVhaz4KCiAgPHZtYXA6QWRCcmVhayB0aW1lT2Zmc2V0PSIwMDowMDowNSIgYnJlYWtUeXBlPSJsaW5lYXIiIGJyZWFrSWQ9Im1pZHJvbGwiPgogICAgPHZtYXA6QWRTb3VyY2UgaWQ9Im1pZHJvbGwtYWQiIGFsbG93TXVsdGlwbGVBZHM9ImZhbHNlIiBmb2xsb3dSZWRpcmVjdHM9InRydWUiPgogICAgICA8dm1hcDpWQVNUQWREYXRhPgogICAgICAgIDxWQVNUIHZlcnNpb249IjMuMCI+CiAgICAgICAgICA8QWQgaWQ9IjIiPgogICAgICAgICAgICA8SW5MaW5lPgogICAgICAgICAgICAgIDxBZFN5c3RlbSB2ZXJzaW9uPSIxLjAiPlRlc3QgQWQgU2VydmVyPC9BZFN5c3RlbT4KICAgICAgICAgICAgICA8QWRUaXRsZT4KICAgICAgICAgICAgICAgIDwhW0NEQVRBW01hcmtldGluZ11dPgogICAgICAgICAgICAgIDwvQWRUaXRsZT4KICAgICAgICAgICAgICA8RGVzY3JpcHRpb24+CiAgICAgICAgICAgICAgICA8IVtDREFUQVtEZW1vIGFkIG51bWJlciA0XV0+CiAgICAgICAgICAgICAgPC9EZXNjcmlwdGlvbj4KICAgICAgICAgICAgICA8RXJyb3I+CiAgICAgICAgICAgICAgICA8IVtDREFUQVtdXT4KICAgICAgICAgICAgICA8L0Vycm9yPgogICAgICAgICAgICAgIDxDcmVhdGl2ZXM+CiAgICAgICAgICAgICAgICA8Q3JlYXRpdmU+CiAgICAgICAgICAgICAgICAgIDxMaW5lYXIgc2tpcG9mZnNldD0iMDA6MDA6MDUiPgogICAgICAgICAgICAgICAgICAgIDxEdXJhdGlvbj4wMDowMDoxMjwvRHVyYXRpb24+CiAgICAgICAgICAgICAgICAgICAgPFRyYWNraW5nRXZlbnRzLz4KICAgICAgICAgICAgICAgICAgICA8QWRQYXJhbWV0ZXJzPgogICAgICAgICAgICAgICAgICAgICAgPCFbQ0RBVEFbPHhtbD48L3htbD5dXT4KICAgICAgICAgICAgICAgICAgICA8L0FkUGFyYW1ldGVycz4KICAgICAgICAgICAgICAgICAgICA8VmlkZW9DbGlja3MvPgogICAgICAgICAgICAgICAgICAgIDxNZWRpYUZpbGVzPgogICAgICAgICAgICAgICAgICAgICAgPE1lZGlhRmlsZSB0eXBlPSJ2aWRlby9tcDQiIHdpZHRoPSIxMjgwIiBoZWlnaHQ9IjcyMCIgZGVsaXZlcnk9InByb2dyZXNzaXZlIiBpZD0iMyIgYml0cmF0ZT0iMzAyNiIgbWluQml0cmF0ZT0iMzIwIiBtYXhCaXRyYXRlPSIzMjAiIHNjYWxhYmxlPSJ0cnVlIiBtYWludGFpbkFzcGVjdFJhdGlvPSJ0cnVlIj4KICAgICAgICAgICAgICAgICAgICAgICAgPCFbQ0RBVEFbaHR0cHM6Ly9zb2x1dGlvbnMuYnJpZ2h0Y292ZS5jb20vYmNscy9hZHMvYmMtYWRzL2JjbHMtYWQtNC0xMnNlY29uZHMubXA0XV0+CiAgICAgICAgICAgICAgICAgICAgICA8L01lZGlhRmlsZT4KICAgICAgICAgICAgICAgICAgICA8L01lZGlhRmlsZXM+CiAgICAgICAgICAgICAgICAgIDwvTGluZWFyPgogICAgICAgICAgICAgICAgPC9DcmVhdGl2ZT4KICAgICAgICAgICAgICA8L0NyZWF0aXZlcz4KICAgICAgICAgICAgICA8RXh0ZW5zaW9ucz4KICAgICAgICAgICAgICAgIDxFeHRlbnNpb24+CiAgICAgICAgICAgICAgICAgIDx4bWw+ZGF0YTwveG1sPgogICAgICAgICAgICAgICAgPC9FeHRlbnNpb24+CiAgICAgICAgICAgICAgPC9FeHRlbnNpb25zPgogICAgICAgICAgICA8L0luTGluZT4KICAgICAgICAgIDwvQWQ+CiAgICAgICAgPC9WQVNUPgogICAgICA8L3ZtYXA6VkFTVEFkRGF0YT4KICAgIDwvdm1hcDpBZFNvdXJjZT4KICA8L3ZtYXA6QWRCcmVhaz4KCiAgPHZtYXA6QWRCcmVhayB0aW1lT2Zmc2V0PSJlbmQiIGJyZWFrVHlwZT0ibGluZWFyIiBicmVha0lkPSJwb3N0cm9sbCI+CiAgICA8dm1hcDpBZFNvdXJjZSBpZD0icG9zdHJvbGwtYWQiIGFsbG93TXVsdGlwbGVBZHM9ImZhbHNlIiBmb2xsb3dSZWRpcmVjdHM9InRydWUiPgogICAgICA8dm1hcDpWQVNUQWREYXRhPgogICAgICAgIDxWQVNUIHZlcnNpb249IjMuMCI+CiAgICAgICAgICA8QWQgaWQ9IjMiPgogICAgICAgICAgICA8SW5MaW5lPgogICAgICAgICAgICAgIDxBZFN5c3RlbSB2ZXJzaW9uPSIxLjAiPlRlc3QgQWQgU2VydmVyPC9BZFN5c3RlbT4KICAgICAgICAgICAgICA8QWRUaXRsZT4KICAgICAgICAgICAgICAgIDwhW0NEQVRBW0JyYW5kXV0+CiAgICAgICAgICAgICAgPC9BZFRpdGxlPgogICAgICAgICAgICAgIDxEZXNjcmlwdGlvbj4KICAgICAgICAgICAgICAgIDwhW0NEQVRBW0RlbW8gYWQgbnVtYmVyIDFdXT4KICAgICAgICAgICAgICA8L0Rlc2NyaXB0aW9uPgogICAgICAgICAgICAgIDxFcnJvcj4KICAgICAgICAgICAgICAgIDwhW0NEQVRBW11dPgogICAgICAgICAgICAgIDwvRXJyb3I+CiAgICAgICAgICAgICAgPENyZWF0aXZlcz4KICAgICAgICAgICAgICAgIDxDcmVhdGl2ZT4KICAgICAgICAgICAgICAgICAgPExpbmVhcj4KICAgICAgICAgICAgICAgICAgICA8RHVyYXRpb24+MDA6MDA6MDg8L0R1cmF0aW9uPgogICAgICAgICAgICAgICAgICAgIDxUcmFja2luZ0V2ZW50cy8+CiAgICAgICAgICAgICAgICAgICAgPEFkUGFyYW1ldGVycz4KICAgICAgICAgICAgICAgICAgICAgIDwhW0NEQVRBWzx4bWw+PC94bWw+XV0+CiAgICAgICAgICAgICAgICAgICAgPC9BZFBhcmFtZXRlcnM+CiAgICAgICAgICAgICAgICAgICAgPFZpZGVvQ2xpY2tzLz4KICAgICAgICAgICAgICAgICAgICA8TWVkaWFGaWxlcz4KICAgICAgICAgICAgICAgICAgICAgIDxNZWRpYUZpbGUgdHlwZT0idmlkZW8vbXA0IiB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIGRlbGl2ZXJ5PSJwcm9ncmVzc2l2ZSIgaWQ9IjQiIGJpdHJhdGU9IjIxMTUiIG1pbkJpdHJhdGU9IjMyMCIgbWF4Qml0cmF0ZT0iMzIwIiBzY2FsYWJsZT0idHJ1ZSIgbWFpbnRhaW5Bc3BlY3RSYXRpbz0idHJ1ZSI+CiAgICAgICAgICAgICAgICAgICAgICAgIDwhW0NEQVRBW2h0dHBzOi8vc29sdXRpb25zLmJyaWdodGNvdmUuY29tL2JjbHMvYWRzL2JjLWFkcy9iY2xzLWFkLTEtOHNlY29uZHMubXA0XV0+CiAgICAgICAgICAgICAgICAgICAgICA8L01lZGlhRmlsZT4KICAgICAgICAgICAgICAgICAgICA8L01lZGlhRmlsZXM+CiAgICAgICAgICAgICAgICAgIDwvTGluZWFyPgogICAgICAgICAgICAgICAgPC9DcmVhdGl2ZT4KICAgICAgICAgICAgICA8L0NyZWF0aXZlcz4KICAgICAgICAgICAgICA8RXh0ZW5zaW9ucz4KICAgICAgICAgICAgICAgIDxFeHRlbnNpb24+CiAgICAgICAgICAgICAgICAgIDx4bWw+ZGF0YTwveG1sPgogICAgICAgICAgICAgICAgPC9FeHRlbnNpb24+CiAgICAgICAgICAgICAgPC9FeHRlbnNpb25zPgogICAgICAgICAgICA8L0luTGluZT4KICAgICAgICAgIDwvQWQ+CiAgICAgICAgPC9WQVNUPgogICAgICA8L3ZtYXA6VkFTVEFkRGF0YT4KICAgIDwvdm1hcDpBZFNvdXJjZT4KICA8L3ZtYXA6QWRCcmVhaz4KCjwvdm1hcDpWTUFQPgo=",
+        "creatives": null,
+        "errors": null
+      }
+    ]
+  }</code></pre>
+    <p><a href="https://www.base64decode.org/">BASE64 같은 도구를 사용하여 응답 본문을 읽을 수</a>있게 만들 수 있습니다.</p>
+    <p>샘플 디코딩된 응답 본문:</p>
+    <pre class="line-numbers">
+  <code class="language-xml" translate="No">&lt;vmap:VMAP xmlns:vmap="http://www.iab.net/videosuite/vmap" version="1.0"&gt;
+
+    &lt;vmap:AdBreak timeOffset="start" breakType="linear" breakId="preroll"&gt;
+      &lt;vmap:AdSource id="preroll-ad" allowMultipleAds="false" followRedirects="true"&gt;
+        &lt;vmap:VASTAdData&gt;
+          &lt;VAST version="3.0"&gt;
+            &lt;Ad id="1"&gt;
+              &lt;InLine&gt;
+                &lt;AdSystem version="1.0"&gt;Test Ad Server&lt;/AdSystem&gt;
+                &lt;AdTitle&gt;
+                  &lt;![CDATA[Portals]]&gt;
+                &lt;/AdTitle&gt;
+                &lt;Description&gt;
+                  &lt;![CDATA[Demo ad number 6]]&gt;
+                &lt;/Description&gt;
+                &lt;Error&gt;
+                  &lt;![CDATA[]]&gt;
+                &lt;/Error&gt;
+                &lt;Creatives&gt;
+                  &lt;Creative&gt;
+                    &lt;Linear&gt;
+                      &lt;Duration&gt;00:00:8&lt;/Duration&gt;
+                      &lt;TrackingEvents/&gt;
+                      &lt;AdParameters&gt;
+                        &lt;![CDATA[&lt;xml&gt;&lt;/xml&gt;]]&gt;
+                      &lt;/AdParameters&gt;
+                      &lt;VideoClicks/&gt;
+                      &lt;MediaFiles&gt;
+                        &lt;MediaFile type="video/mp4" width="1280" height="720" delivery="progressive" id="2" bitrate="4316" minBitrate="320" maxBitrate="320" scalable="true" maintainAspectRatio="true"&gt;
+                          &lt;![CDATA[http://solutions.brightcove.com/bcls/ads/bc-ads/bcls-ad-6-5seconds.mp4]]&gt;
+                        &lt;/MediaFile&gt;
+                      &lt;/MediaFiles&gt;
+                    &lt;/Linear&gt;
+                  &lt;/Creative&gt;
+                &lt;/Creatives&gt;
+                &lt;Extensions&gt;
+                  &lt;Extension&gt;
+                    &lt;xml&gt;data&lt;/xml&gt;
+                  &lt;/Extension&gt;
+                &lt;/Extensions&gt;
+              &lt;/InLine&gt;
+            &lt;/Ad&gt;
+          &lt;/VAST&gt;
+        &lt;/vmap:VASTAdData&gt;
+      &lt;/vmap:AdSource&gt;
+    &lt;/vmap:AdBreak&gt;
+  ...</code></pre>
+  </section>
+</article>
