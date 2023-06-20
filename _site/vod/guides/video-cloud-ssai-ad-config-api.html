@@ -1,298 +1,459 @@
-﻿<!doctype html>
-<html lang="ko">
+﻿<!DOCTYPE html>
+<html lang="ko"> 
+    <head>
+        <title>비디오 클라우드 SSAI광고 구성 API</title>
+        
+        <!-- Meta -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="이 항목에서는 SSAI (서버측 광고 삽입) API를 사용하여 광고 구성을 만들고 관리하는 방법에 대해 알아봅니다.">
+        
+        <!-- Google Font -->
+        <link href="/assets/s-site-assets-stylesheets/fonts/poppins.css" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/s-site-assets-stylesheets/fonts/articulat-site.css">
+        <link href="/assets/s-site-assets-stylesheets/fonts/source-code-pro.css" rel="stylesheet">
+        
+        <!-- FontAwesome JS-->
+        
+        <script src="https://kit.fontawesome.com/d67c74a882.js" crossorigin="anonymous"></script>  
+        
+        <!-- Plugins CSS -->
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.2/styles/atom-one-dark.min.css">
+        <link rel="stylesheet" href="/assets/s-site-assets-template-stylesheets/plugins/simplelightbox/simple-lightbox.min.css">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="이 항목에서는 SSAI (서버측 광고 삽입) API를 사용하여 광고 구성을 만들고 관리하는 방법에 대해 알아봅니다.">
-  
-  <title>비디오 클라우드 SSAI광고 구성 API</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">  
-  <link data-react-helmet="true" rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500&amp;display=swap">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://support.brightcove.com/site-assets/css/site/prism.css">
-  <link rel="stylesheet" href="https://support.brightcove.com/site-assets/css/site/styles.css">
-  <link rel="stylesheet" href="https://support.brightcove.com/site-assets/css/site/landing-page.css">
-  <link rel="stylesheet" href="https://support.brightcove.com/site-assets/css/site/tabs.css">
-  <link rel="stylesheet" href="/assets/css/local.css">
-  <link data-react-helmet="true" rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500&display=swap">
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/381443caa8.js" crossorigin="anonymous"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/google-analytics.js"></script>
-  <script src="/assets/js/sajari-head.js"></script>
-</head>
-
-<body class="body">
-
-<header>
-  <div class="div-header">
-    <a href="/"><span class="product-logo" style="font-family:'Balto Web','Public Sans';font-size:2em;font-weight:bold;">브라이트코브 스사이<sup>™</sup></span></a>
-<!-- GTranslate: https://gtranslate.io/ -->
-<select onchange="doGTranslate(this);"><option value="">언어 선택</option><option value="en|en" translate="No">English</option><option value="en|zh-TW" translate="No">繁體中文</option><option value="en|fr" translate="No">Français</option><option value="en|de" translate="No">Deutsche</option><option value="en|ja" translate="No">日本語</option><option value="en|ko" translate="No">한국어</option><option value="en|es" translate="No">Español</option></select>
-
-<script>
-/* <![CDATA[ */
-function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;if(lang_pair=='')return;var lang=lang_pair.split('|')[1];var plang=location.hostname.split('.')[0];if(plang.length !=2 && plang.toLowerCase() != 'zh-cn' && plang.toLowerCase() != 'zh-tw')plang='en';location.href=location.protocol+'//'+(lang == 'en' ? '' : lang+'.')+location.hostname.replace('www.', '').replace(RegExp('^' + plang + '\\.'), '')+location.pathname+location.search;}
-/* ]]> */
-</script>
-
-    
+        <!-- Theme CSS -->  
+        <link id="theme-style" rel="stylesheet" href="/assets/s-site-assets-template-stylesheets/css/theme.css">
+        <link rel="stylesheet" href="/assets/s-site-assets-stylesheets/prism.css">
+        <link rel="stylesheet" href="/assets/s-site-assets-template-stylesheets/custom-css/styles.css">
 
 
-    <span class="secondary-nav"><a href="https://supportportal.brightcove.com/s/login/?"><img src="https://support.brightcove.com/site-assets/images/site/support.png" alt="지원"/> 고객 지원 문의</a> <span style="vertical-align: top;margin-left:1em;margin-right:1em;">|</span> <a href="https://status.brightcove.com/"><img src="https://support.brightcove.com/site-assets/images/site/status.png" alt="시스템 상태"/> 시스템 상태</a></span> <br/>
-    
-  </div>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb arr-right">
-      
-      <li class="breadcrumb-item"><a href="/">홈</a></li>
-      
-      
-      
-      <li class="breadcrumb-item"><a href="/vod/guides/">주문형 비디오</a></li>
-      
-      <li class="breadcrumb-item active" aria-current="page">비디오 클라우드 SSAI광고 구성 API</li>
-    </ol>
-  </nav>
-</header>
-<div class="container">
-    <div class="row">
-      <div class="col-sm-3 left-side-bar">
-        <select id="site_select" class="bcls-select" style="margin-right: 1rem;">
-					<option value="">기타 브라이트코브 문서</option>
-					
-						
-							<option value="https://support.brightcove.com">설명서 홈</option>
-						
-					
-						
-							<option value="https://audience.support.brightcove.com">브라이트코브 대상</option>
-						
-					
-						
-							<option value="https://beacon.support.brightcove.com">브라이트코브 비콘</option>
-						
-					
-						
-							<option value="https://campaign.support.brightcove.com">브라이트코브 캠페인</option>
-						
-					
-						
-							<option value="https://engage.support.brightcove.com">브라이트코브 참여</option>
-						
-					
-						
-							<option value="https://live.support.brightcove.com">Brightcove Live</option>
-						
-					
-						
-							<option value="https://gallery.support.brightcove.com">Brightcove Gallery</option>
-						
-					
-						
-							<option value="https://ssai.support.brightcove.com">Brightcove SSAI</option>
-						
-					
-						
-							<option value="https://social.support.brightcove.com">브라이트코브 소셜</option>
-						
-					
-						
-							<option value="https://studio.support.brightcove.com">비디오 클라우드 스튜디오</option>
-						
-					
-						
-							<option value="https://player.support.brightcove.com">브라이트코브 플레이어 개발</option>
-						
-					
-						
-							<option value="https://apis.support.brightcove.com">비디오 클라우드 플랫폼 API</option>
-						
-					
-						
-							<option value="https://sdks.support.brightcove.com">비디오 클라우드 디바이스 SDK</option>
-						
-					
-						
-							<option value="https://integrations.support.brightcove.com">통합 및 CMS 커넥터</option>
-						
-					
-						
-							<option value="https://general.support.brightcove.com">비디오 클라우드 일반 정보</option>
-						
-					
-						
-							<option value="https://zencoder.support.brightcove.com">Zencoder</option>
-						
-					
-				</select>
-        <nav class="sidenav" id="side_nav">
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XBJC11HF8Z"></script>
+        <script translate="no">
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-XBJC11HF8Z');
+        </script>
+        <script src="/assets/s-site-assets-scripts/sixth-sense.js"></script>
+        <script src="/assets/s-site-assets-scripts/sajari-head.js"></script>
+        <script src="/assets/s-site-assets-scripts/feather.min.js"></script>
+
+    </head> 
+
+    <body class="docs-page">
+        
+
+<header class="header fixed-top">
+  <div class="branding docs-branding">
+    <div class="container-fluid position-relative py-2">
+      <div class="docs-logo-wrapper">
+        <button id="docs-sidebar-toggler" class="docs-sidebar-toggler"
+          type="button">
+          <span></span> <span></span> <span></span>
+        </button>
+        <div class="site-logo"><a class="navbar-brand" href="https://support.brightcove.com/" style="margin-left: 15px;"> <img class="logo-icon me-2" src="/assets/s-site-assets-template-stylesheets/images/bc_logo_black_1@1x.png" alt="로고" style="margin-bottom: 9px;"/>
+            <!-- <span class="logo-text">BRIGHTCOVE</span> -->
+          </a></div>
+      </div><!--//docs-logo-wrapper-->
+
+      <div class="docs-top-utilities d-flex justify-content-end
+        align-items-center">
+        
+        <!-- Search bar -->
+        <div id="nav-search-box" class="top-search-box d-none d-lg-flex" style="margin-right: 10px ;"></div>
+
+<select id="site_select" class="form-select select-focus" style="width:
+          20%; margin-right: 10px;" translate="no">
+          <option value="">Other Brightcove Docs</option>
           
-            
-            <h5><a href="/index.html">홈</a></h5>
-            
           
-            
-              <h5 class="submenu-header"><a href="/getting-started/index.html">시작하기 <strong>+</strong></a></h5>
-              <ul class="sidenav-submenu" style="display:none;">
-                
-                  
-                    <li><a href="/getting-started/video-cloud-ssai-overview.html">SSAI 개요</a></li>
-                  
-                
-                  
-                    <li><a href="https://studio.support.brightcove.com/admin/configuring-server-side-ad-settings.html">서버 측 광고 설정 구성</a></li>
-                  
-                
-              </ul>
-            
+          <option value="https://support.brightcove.com" translate="no">Documentation Home</option>
           
-            
-              <h5 class="submenu-header"><a href="/vod/guides/index.html">주문형 비디오 가이드<strong>+</strong></a></h5>
-              <ul class="sidenav-submenu" style="display:none;">
-                
-                  
-                    <li><a href="https://player.support.brightcove.com/plugins/implementing-server-side-ads-brightcove-player.html">브라이트코브 플레이어로 SSAI를 구현하기</a></li>
-                  
-                
-                  
-                    <li><a href="https://sdks.support.brightcove.com/features/implementing-server-side-ads-native-player-sdks.html">기본 SDK를 사용하여 SSAI를 구현하기</a></li>
-                  
-                
-                  
-                    <li><a href="/vod/guides/ssai-ad-block-detection-and-auto-failover.html">SSAI는: 광고 블록 탐지 및 자동 장애 조치</a></li>
-                  
-                
-                  
-                    <li><a href="/vod/guides/video-cloud-ssai-ad-config-api.html">비디오 클라우드 SSAI광고 구성 API</a></li>
-                  
-                
-                  
-                    <li><a href="/vod/guides/ad-error-beacons-ssai.html">SSAI를 사용한 광고 오류 신호</a></li>
-                  
-                
-              </ul>
-            
           
-            
-              <h5 class="submenu-header"><a href="/vod/references/index.html">주문형 비디오 레퍼런스<strong>+</strong></a></h5>
-              <ul class="sidenav-submenu" style="display:none;">
-                
-                  
-                    <li><a href="/vod/references/reference.html">SSAI API 참조</a></li>
-                  
-                
-                  
-                    <li><a href="/vod/references/ssai-api-error-reference.html">SSAIAPI 오류 참조</a></li>
-                  
-                
-                  
-                    <li><a href="https://player.support.brightcove.com/plugins/changelog/server-side-ads-plugin-changelog.html">서버 측 광고 플러그인 변경로그</a></li>
-                  
-                
-              </ul>
-            
           
-            
-              <h5 class="submenu-header"><a href="/live/guides/index.html">라이브 가이드<strong>+</strong></a></h5>
-              <ul class="sidenav-submenu" style="display:none;">
-                
-                  
-                    <li><a href="https://live.support.brightcove.com/live-module/implementing-server-side-ads-live-module.html">라이브 모듈에서 SSAI를 구현하기</a></li>
-                  
-                
-                  
-                    <li><a href="https://live.support.brightcove.com/live-api/ssai/live-api-server-side-ad-insertion-ssai.html">브라이트코브 라이브 API: 서버 측 광고 삽입 (SSAI)</a></li>
-                  
-                
-                  
-                    <li><a href="https://live.support.brightcove.com/live-api/ssai/live-api-cue-points-and-ad-beacons-ssai.html">라이브 API: SSAI를 사용한 큐 포인트 및 광고 비콘</a></li>
-                  
-                
-                  
-                    <li><a href="https://player.support.brightcove.com/advertising/client-side-preroll-with-live-ssai.html">라이브 SSAI를 사용한 클라이언트측 프리롤 광고</a></li>
-                  
-                
-                  
-                    <li><a href="/live/guides/overview-player-enhancements-live-ssai.html">개요: 라이브 SSAI를 위한 플레이어 향상</a></li>
-                  
-                
-                  
-                    <li><a href="/live/guides/implementing-player-enhancements-live-ssai.html">라이브 SSAI에 대한 플레이어 향상 구현</a></li>
-                  
-                
-              </ul>
-            
+          <option value="https://support.brightcove.com/" translate="no">-- VIDEO CLOUD --</option>
           
-            
-              <h5 class="submenu-header"><a href="/live/references/index.html">라이브 참조<strong>+</strong></a></h5>
-              <ul class="sidenav-submenu" style="display:none;">
-                
-                  
-                    <li><a href="/live/references/reference.html">라이브 API 참조</a></li>
-                  
-                
-                  
-                    <li><a href="https://live.support.brightcove.com/live-api/references/live-api-error-messages.html">라이브 API: 오류 메시지</a></li>
-                  
-                
-                  
-                    <li><a href="https://live.support.brightcove.com/release-notes/live-api-release-notes.html">라이브 API 릴리스 노트</a></li>
-                  
-                
-              </ul>
-            
           
-            
-              <h5 class="submenu-header"><a href="/support/index.html">개발자 지원 <strong>+</strong></a></h5>
-              <ul class="sidenav-submenu" style="display:none;">
-                
-                  
-                    
-                  
-                
-                  
-                    <li><a href="/support/viewing-brightcove-system-status-page.html">브라이트코브 시스템 상태 페이지 보기</a></li>
-                  
-                
-                  
-                    <li><a href="/support/contact-sales.html">영업팀에 문의</a></li>
-                  
-                
-                  
-                    <li><a href="/support/opening-case-with-brightcove-support.html">지원 사례 열기</a></li>
-                  
-                
-              </ul>
-            
           
-      </nav>
+          <option value="https://studio.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Video Cloud Studio</option>
+          
+          
+          
+          <option value="https://mstudio.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Marketing Studio</option>
+          
+          
+          
+          <option value="https://player.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Player Development</option>
+          
+          
+          
+          <option value="https://apis.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Video Cloud Platform APIs</option>
+          
+          
+          
+          <option value="https://sdks.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Video Cloud Device SDKs</option>
+          
+          
+          
+          <option value="https://integrations.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Integrations and CMS Connectors</option>
+          
+          
+          
+          <option value="https://general.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Video Cloud General Information</option>
+          
+          
+          
+          <option value="https://support.brightcove.com/" translate="no">-- VIDEO ESSENTIALS --</option>
+          
+          
+          
+          <option value="https://audience-insights.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Audience Insights</option>
+          
+          
+          
+          <option value="https://beacon-help.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Beacon Studio</option>
+          
+          
+          
+          <option value="https://beacon.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Beacon Classic</option>
+          
+          
+          
+          <option value="https://corptv.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;CorpTV</option>
+          
+          
+          
+          <option value="https://live.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Live</option>
+          
+          
+          
+          <option value="https://zencoder.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Zencoder</option>
+          
+          
+          
+          <option value="https://support.brightcove.com/" translate="no">-- VIDEO CLOUD ADD-ONS --</option>
+          
+          
+          
+          <option value="https://gallery.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Gallery</option>
+          
+          
+          
+          <option value="https://studio.support.brightcove.com/social/index.html" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Social</option>
+          
+          
+          
+          <option value="https://interactivity.support.brightcove.com/index.html" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Interactivity</option>
+          
+          
+          
+          <option value="https://ssai.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove SSAI</option>
+          
+          
+          
+          <option value="https://campaign.support.brightcove.com" translate="no">&nbsp;&nbsp;&nbsp;&nbsp;Brightcove Campaign</option>
+          
+          
+        </select>
+
+        <select id="language_select" class="form-select select-focus" style="width: 10%;"
+          onchange="doGTranslate(this);" translate="no">
+          <!-- <option value="">Select Language</option> -->
+          <option value="en|en" translate="No">English</option>
+          <option value="en|zh-TW" translate="No">繁體中文</option>
+          <option value="en|fr" translate="No">Français</option>
+          <option value="en|de" translate="No">Deutsche</option>
+          <option value="en|ja" translate="No">日本語</option>
+          <option value="en|ko" translate="No">한국어</option>
+          <option value="en|es" translate="No">Español</option>
+        </select>
+
+        <script translate="no">
+          /* <![CDATA[ */
+          function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;if(lang_pair=='')return;var lang=lang_pair.split('|')[1];var plang=location.hostname.split('.')[0];if(plang.length !=2 && plang.toLowerCase() != 'zh-cn' && plang.toLowerCase() != 'zh-tw')plang='en';location.href=location.protocol+'//'+(lang == 'en' ? '' : lang+'.')+location.hostname.replace('www.', '').replace(RegExp('^' + plang + '\\.'), '')+location.pathname+location.search;}
+          /* ]]> */
+        </script>
+      </div>
     </div>
-    <div class="col-lg-7" style="background-color: white;color: #333333;margin-top: -1em;margin-bottom: -1em;padding-bottom:1em;">
-  <!-- bootstrap layout -->
+  </div>
+</header><!--//header-->
 
-<p id="bc_veggie_burger_wrapper" style="display: none;"><img id="bc_veggie_burger" src="/assets/images/feather/menu.svg" alt="네비게이션 메뉴"/></p>
+<div class="docs-wrapper">
+  <div id="docs-sidebar" class="docs-sidebar" style="padding-right: 15px;">
+    <div id="nav-search-box" class="top-search-box d-lg-none p-3"></div>
+    <div class="row">
+      
+        <div id="side_nav" style="margin-left: 1em; display: inline-block; border-right: 1px solid #e5e5e6; padding-right: 1em;">
+          
+          <nav class="docs-nav sidenav" aria-label="Main">
+            <ul class="site-nav" style="list-style-type: none;">
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="/index.html">홈</a></li>
+            
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="/getting-started/index.html"><span class="theme-icon-holder me-2"><i class="fa-solid fa-plus"></i></span>&nbsp;시작하기</a>
+              <ul role="list" class="section-items list-unstyled nav flex-column pb-3" style="display:none;">
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/getting-started/video-cloud-ssai-overview.html">SSAI 개요</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://studio.support.brightcove.com/admin/general/configuring-server-side-ad-settings.html">서버 측 광고 설정 구성</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/getting-started/video-cloud-ssai-ad-logs.html">SSAI 광고 추적 로그</a></li>
+              
+              
+              
+            </ul>
+            </li>
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="/vod/guides/index.html"><span class="theme-icon-holder me-2"><i class="fa-solid fa-plus"></i></span>&nbsp;온디맨드 비디오 가이드</a>
+              <ul role="list" class="section-items list-unstyled nav flex-column pb-3" style="display:none;">
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://player.support.brightcove.com/plugins/implementing-server-side-ads-brightcove-player.html">SSAI 구현 Brightcove Player</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://sdks.support.brightcove.com/features/implementing-server-side-ads-native-player-sdks.html">기본 SDK를 사용하여 SSAI를 구현하기</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/vod/guides/ssai-non-bc-players.html">비 Brightcove 플레이어로 SSAI 구현</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/vod/guides/ssai-ad-block-detection-and-auto-failover.html">SSAI는: 광고 블록 탐지 및 자동 장애 조치</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://apis.support.brightcove.com/ssai/getting-started/video-cloud-ssai-ad-config-api.html">비디오 클라우드 SSAI광고 구성 API</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/vod/guides/video-cloud-ssai-ad-tag-validation.html">비디오 클라우드 SSAI광고 태그 유효성 검사</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/vod/guides/ad-error-beacons-ssai.html">SSAI를 사용한 광고 오류 신호</a></li>
+              
+              
+              
+            </ul>
+            </li>
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="https://apis.support.brightcove.com/ssai/references/index.html"><span class="theme-icon-holder me-2"><i class="fa-solid fa-plus"></i></span>&nbsp;온디맨드 비디오 레퍼런스</a>
+              <ul role="list" class="section-items list-unstyled nav flex-column pb-3" style="display:none;">
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://apis.support.brightcove.com/ssai/references/reference.html">SSAI API 참조</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://apis.support.brightcove.com/ssai/references/ssai-api-error-reference.html">SSAIAPI 오류 참조</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://player.support.brightcove.com/plugins/changelog/server-side-ads-plugin-changelog.html">서버 측 광고 플러그인 변경로그</a></li>
+              
+              
+              
+            </ul>
+            </li>
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="/live/guides/index.html"><span class="theme-icon-holder me-2"><i class="fa-solid fa-plus"></i></span>&nbsp;라이브 가이드</a>
+              <ul role="list" class="section-items list-unstyled nav flex-column pb-3" style="display:none;">
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://live.support.brightcove.com/live-module/implementing-server-side-ads-live-module.html">라이브 모듈에서 SSAI를 구현하기</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://apis.support.brightcove.com/live-api/ssai/live-api-server-side-ad-insertion-ssai.html">브라이트코브 라이브 API: 서버 측 광고 삽입 (SSAI)</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://apis.support.brightcove.com/live-api/ssai/live-api-cue-points-and-ad-beacons-ssai.html">라이브 API: SSAI를 사용한 큐 포인트 및 광고 비콘</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://player.support.brightcove.com/advertising/client-side-preroll-with-live-ssai.html">라이브 SSAI를 사용한 클라이언트측 프리롤 광고</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/live/guides/overview-player-enhancements-live-ssai.html">개요: 라이브 SSAI를 위한 플레이어 향상</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/live/guides/implementing-player-enhancements-live-ssai.html">라이브 SSAI에 대한 플레이어 향상 구현</a></li>
+              
+              
+              
+            </ul>
+            </li>
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="/live/references/index.html"><span class="theme-icon-holder me-2"><i class="fa-solid fa-plus"></i></span>&nbsp;라이브 레퍼런스</a>
+              <ul role="list" class="section-items list-unstyled nav flex-column pb-3" style="display:none;">
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/live/references/reference.html">라이브 API 참조</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://apis.support.brightcove.com/live-api/references/live-api-error-messages.html">라이브 API: 오류 메시지</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="https://live.support.brightcove.com/release-notes/live-api-release-notes.html">라이브 API 릴리스 노트</a></li>
+              
+              
+              
+            </ul>
+            </li>
+            
+            
+            
+            <li class="nav-item section-title"><a class="nav-link" href="/support/index.html"><span class="theme-icon-holder me-2"><i class="fa-solid fa-plus"></i></span>&nbsp;개발자 지원</a>
+              <ul role="list" class="section-items list-unstyled nav flex-column pb-3" style="display:none;">
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/support/viewing-brightcove-system-status-page.html">브라이트코브 시스템 상태 페이지 보기</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/support/contact-sales.html">영업팀에 문의</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/support/opening-case-with-brightcove-support.html">지원 사례 열기</a></li>
+              
+              
+              
+              
+              
+              <li class="nav-item"><a class="nav-link" href="/support/reset-support-portal-password.html">지원 포털 비밀번호 재설정</a></li>
+              
+              
+              
+            </ul>
+            </li>
+            
+            
+          </ul>
+          </nav>
+        </div>
+      </div>
+    </div><!--//docs-sidebar-->
+  </div>
+</div>
 
-<!-- search bar -->
-<div id="nav-search-box" style="margin-top: 1rem;"></div>
-<!-- in-page navigation for narrow screens -->
-<details class="centered-inpage-nav" id="centered_inpage_nav">
-  <summary><h6 class="toc">페이지 내용</h6></summary>
-  <nav id="centered_toc"></nav>
-  <ul id="centered_in_page_toc" class="list-none"></ul>
-</details>
-<!-- open in new tab/window -->
-<a id="open_new_tab" href="#" target="_blank" style="display: none;"><img src="/assets/images/feather/external-link.svg" alt="새 탭에서 열기" style="margin-top:4em;width: 1.5em;"/></a>
-
-
-
-  
-    
-
-
+<div style="margin-top: 20px;">
+  <div class="docs-content" style="padding-bottom: 0px;">
+    <div class="container">
+      <div class="docs-overview">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            
+            <li class="breadcrumb-item"><a class="theme-link" href="/">홈</a></li>
+            
+            
+            <li class="breadcrumb-item"><a class="theme-link" href="/vod/">보드</a></li>
+            
+            
+            
+            <li class="breadcrumb-item"><a class="theme-link" href="/vod/guides/">가이드</a></li>
+            
+            
+            
+            <li class="breadcrumb-item active" aria-current="page">비디오 클라우드 SSAI광고 구성 API</li>
+            
+            
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="docs-content">
+  <div class="container">
+    <div class="docs-overview py-5">
+      
+      <div class="centered-inpage-nav" id="centered_inpage_nav">
+        <nav id="centered_toc">
+          <select id="centered_in_page_toc" class="form-select select-focus"></select>
+        </nav>
+      </div>
+      <br/>
+      
+      
+<h1>이 페이지는 이동했습니다. 3초 후에 <a href="https://apis.support.brightcove.com/ssai/getting-started/video-cloud-ssai-ad-config-api.html">새 위치</a> 로 이동합니다. 북마크를 업데이트하세요!</h1>
+<script type="text/javascript">
+var t = setTimeout(function() {
+    window.location.href = 'https://apis.support.brightcove.com/ssai/getting-started/video-cloud-ssai-ad-config-api.html';
+}, 3000);
+</script>
 <h1>비디오 클라우드 SSAI광고 구성 API</h1>
 <article class="bcls-article">
   <summary>이 항목에서는 SSAI (서버측 광고 삽입) API를 사용하여 광고 구성을 만들고 관리하는 방법에 대해 알아봅니다.</summary>
@@ -300,13 +461,13 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 <section id="top" class="bcls-section">
 <p>광고 구성은 광고 통화, 비콘 및 기타 구성 옵션을 포함하여 SSAI 재생의 다양한 측면을 정의합니다. 계정에는 여러 구성이 있을 수 있으며 현재 구성을 계정 간에 공유할 수 없습니다.</p>
 
-<aside class="bcls-aside bcls-aside--tip">Video Cloud Studio에서 광고 구성을 쉽게 생성, 나열 및 삭제할 수 있습니다. 자세한 내용은<a href="https://studio.support.brightcove.com/admin/configuring-server-side-ad-settings.html">서버측 광고 설정 구성</a>문서를 참조하십시오.</aside>
+<aside class="bcls-aside bcls-aside--tip">Video Cloud Studio에서 광고 구성을 쉽게 생성, 나열 및 삭제할 수 있습니다. 자세한 내용은 서버 측 광고 설정<a href="https://studio.support.brightcove.com/admin/configuring-server-side-ad-settings.html">구성</a>문서를 참조하십시오.</aside>
 
 <aside class="bcls-aside bcls-aside--information">참고:
 <ul>
-	<li>SSAI를 사용하려면 비디오 클라우드 계정을<a href="https://studio.support.brightcove.com/general/overview-dynamic-delivery.html">동적 전송으로</a>구성하고 SSAI에 대해 활성화해야 합니다. 이 기능을 사용하려면 계정 관리자에게 문의하십시오.</li>
+	<li>SSAI를 사용하려면 비디오 클라우드 계정이<a href="https://studio.support.brightcove.com/general/overview-dynamic-delivery.html">동적 전송을 위해</a>구성되고 SSAI를 활성화해야 합니다. 이 기능을 사용하려면 계정 관리자에게 문의하십시오.</li>
 	<li>SSAI는 VOD (주문형 비디오) 와 함께 작동하며 라이브 재생을 지원합니다.</li>
-	<li>제한 사항 목록은<a href="/getting-started/video-cloud-ssai-overview.html#Limitations">SSAI의 개요</a>문서를 참조하십시오.</li>
+	<li>제한 목록은<a href="/getting-started/video-cloud-ssai-overview.html#Limitations"> SSAI 개요</a>문서를 참조하십시오.</li>
 </ul>
 </aside>
 </section>
@@ -325,7 +486,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 
 <h4>계정 경로</h4>
 
-<p>모든 경우에 특정 Video Cloud 계정에 대한 요청이 이루어집니다. 따라서 항상 기본 URL에 계정 ID <code translate="No">accounts</code>다음에 용어를 추가합니다.</p>
+<p>모든 경우에 특정 Video Cloud 계정에 대한 요청이 이루어집니다. 따라서 항상 기본 URL에 용어<code translate="No">accounts</code>뒤에 계정 ID를 추가해야 합니다.</p>
 
 <pre>
 <code class="language-http" translate="No">https://ssai.api.brightcove.com/v1<strong>/accounts/</strong><span class="bcls-input">your account id</span></code></pre>
@@ -337,7 +498,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 <pre>
 <code class="language-http" translate="No">Authorization: Bearer <span class="bcls-input">your access token</span></code></pre>
 
-<p><code translate="No">access_token</code>는 브라이트코브 OAuth 서비스에서 가져와야 하는 임시 OAuth2 액세스 토큰입니다. 클라이언트 자격 증명을 획득하고 이를 사용하여 액세스 토큰을 검색하는 방법에 대한 자세한 내용은<a href="https://apis.support.brightcove.com/oauth/getting-started/overview-oauth-api-v4.html">브라이트코브 OAuth 개요를</a>참조하십시오.</p>
+<p><code translate="No">access_token</code>는 브라이트코브 OAuth 서비스에서 가져와야 하는 임시 OAuth2 액세스 토큰입니다. 클라이언트 자격 증명을 얻고 이를 사용하여 액세스 토큰을 검색하는 방법에 대한 자세한 내용은<a href="https://apis.support.brightcove.com/oauth/getting-started/overview-oauth-api-v4.html"> Brightcove OAuth 개요를 참조하십시오</a> .</p>
 
 <h3>운영</h3>
 
@@ -378,7 +539,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		</tr>
 		<tr>
 			<th rowspan="2">헤더</th>
-			<td>권한 부여: <span class="bcls-input">액세스 토큰을 소지하십시오</span> .</td>
+			<td>권한 부여: <span class="bcls-input">액세스 토큰 전달자</span></td>
 		</tr>
 		<tr>
 			<td>콘텐츠 유형: 응용 프로그램/json</td>
@@ -423,7 +584,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		</tr>
 		<tr>
 			<th rowspan="2">헤더</th>
-			<td>권한 부여: <span class="bcls-input">액세스 토큰을 소지하십시오</span> .</td>
+			<td>권한 부여: <span class="bcls-input">액세스 토큰 전달자</span></td>
 		</tr>
 		<tr>
 			<td>콘텐츠 유형: 응용 프로그램/json</td>
@@ -462,11 +623,11 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		</tr>
 		<tr>
 			<th>URL</th>
-			<td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">귀하의 계정 ID</span><span class="bcls-input">/ssai_configs/귀하의 광고 구성 ID</span></td>
+			<td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">계정 ID</span> /ssai_configs/ <span class="bcls-input">광고 구성 ID</span></td>
 		</tr>
 		<tr>
 			<th rowspan="2">헤더</th>
-			<td>권한 부여: <span class="bcls-input">액세스 토큰을 소지하십시오</span> .</td>
+			<td>권한 부여: <span class="bcls-input">액세스 토큰 전달자</span></td>
 		</tr>
 		<tr>
 			<td>콘텐츠 유형: 응용 프로그램/json</td>
@@ -541,11 +702,11 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		</tr>
 		<tr>
 			<th>URL</th>
-			<td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">귀하의 계정 ID</span><span class="bcls-input">/ssai_configs/귀하의 광고 구성 ID</span></td>
+			<td>https://ssai.api.brightcove.com/v1/accounts/ <span class="bcls-input">계정 ID</span> /ssai_configs/ <span class="bcls-input">광고 구성 ID</span></td>
 		</tr>
 		<tr>
 			<th rowspan="2">헤더</th>
-			<td>권한 부여: <span class="bcls-input">액세스 토큰을 소지하십시오</span> .</td>
+			<td>권한 부여: <span class="bcls-input">액세스 토큰 전달자</span></td>
 		</tr>
 		<tr>
 			<td>콘텐츠 유형: 응용 프로그램/json</td>
@@ -614,7 +775,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		<tr>
 			<td><code translate="No">ad_config.expected_ad_response</code></td>
 			<td>문자열</td>
-			<td>응답을 구문 분석하는 데 사용할 기술. <sup><a href="#n1"> [ 1]</a></sup><br/><br/>값:
+			<td>응답을 분석하는 데 사용할 기술<sup><a href="#n1">[1] </a></sup><br/><br/>값:
 			<ul>
 				<li><code translate="No">dfp_ad_rules</code></li>
 				<li><code translate="No">dfp_vmap</code></li>
@@ -626,7 +787,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		<tr>
 			<td><code translate="No">ad_config.disable_server_beacons</code></td>
 			<td>부울</td>
-			<td>광고 노출/비콘의 서버측 실행을 비활성화할지 여부 플래그 로<br/><br/><code translate="No">true</code>설정하면 SSAI가 서버측 신호를 실행하지 않고 모든 비콘을 VMAP 출력에 포함시킵니다. <br/><br/>로<code translate="No">false</code>설정하면 SSAI는 서버 측에서 사용할 수 있는 신호를 발생시키고 VMAP 출력에 포함할 수 없는 신호를 포함합니다.</td>
+			<td>광고 노출/비콘의 서버 측 실행을 비활성화할지 여부를 표시합니다. <br/><br/>로 설정할 때<code translate="No">true</code> , SSAI는 서버 측 비콘을 실행하지 않고 VMAP 출력에 모든 비콘을 포함합니다. <br/><br/>로 설정할 때<code translate="No">false</code> , SSAI는 서버 측에서 할 수 있는 비콘을 발사하고 VMAP 출력에 할 수 없는 비콘을 포함합니다.</td>
 		</tr>
 		<tr>
 			<td><code translate="No">ad_config.round_up_cue_points</code></td>
@@ -641,22 +802,22 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 		<tr>
 			<td><code translate="No">ad_config.template_url.defaults</code></td>
 			<td>객체</td>
-			<td>URL 매개 변수를 제공하지 않는 경우에 사용할 기본값을 정의하는 문자열에 문자열의지도.<br/><br/>리터럴<code translate="No">{ "url.foo": "SomeString" }</code><br/><br/>또는 다른 변수를 참조 할 수 있습니다. <code translate="No">{ "url.foo": "{{ metadata.title_id }}" }</code></td>
+			<td>URL 매개 변수를 제공하지 않는 경우에 사용할 기본값을 정의하는 문자열에 문자열의지도.<br/><br/>리터럴일 수 있습니다. <code translate="No">{ "url.foo": "SomeString" }</code><br/><br/>또는 다른 변수를 참조할 수 있습니다. <code translate="No">{ "url.foo": "{{ metadata.title_id }}" }</code></td>
 		</tr>
 		<tr>
-			<td><code translate="No">discontinuities.dash</code><sup><a href="#n2"> [ 2]</a></sup></td>
+			<td><code translate="No">discontinuities.dash</code><sup><a href="#n2">[2] </a></sup></td>
 			<td>[] 문자열</td>
-			<td>다중 기간 대시 매니페스트를 제공할 대시 버전을 제어합니다.<br/><br/>모든 버전에 대해 여러 기간 대시를<code translate="No">["*"]</code>전달하려면 로 설정 안 함<br/><br/>비어있는 목록<br/><br/>예: <code translate="No">["live-timeline"]</code>를 사용하여 라이브 타임 라인에 제공하지만 hbbTV에는 제공하지 않습니다.</td>
+			<td>다중 기간 대시 매니페스트를 제공할 대시 버전을 제어합니다.<br/><br/>모든 버전에 다중 기간 대시를<code translate="No">["*"]</code>제공하도록 설정<br/><br/>빈 목록 없음<br/><br/>예: <code translate="No">["live-timeline"]</code>실시간 타임라인용으로 제공하지만 hbbtv에는 제공하지 않음</td>
 		</tr>
 		<tr>
-			<td><code translate="No">discontinuities.hls</code><sup><a href="#n2"> [ 2]</a></sup></td>
+			<td><code translate="No">discontinuities.hls</code><sup><a href="#n2">[2] </a></sup></td>
 			<td>[] 문자열</td>
-			<td>불연속으로 제공할 hl의 버전을 제어합니다.<br/><br/>로 설정<code translate="No">["*"]</code>모든 버전의 HLS에서 불연속성 제공<br/><br/>절대로 빈 목록<br/><br/>예: <code translate="No">["v4","v5"]</code> v4 및 v5 용으로 제공하지만 v3 용으로는 제공하지 않음</td>
+			<td>불연속으로 제공할 hl의 버전을 제어합니다.<br/><br/>로 설정<code translate="No">["*"]</code> HLS의 모든 버전에서 불연속으로 제공<br/><br/>절대 빈 목록<br/><br/>예: <code translate="No">["v4","v5"]</code> v4 및 v5에는 제공하지만 v3에는 제공하지 않음</td>
 		</tr>
 		<tr>
 			<td><code translate="No">beacon_templates</code></td>
 			<td>어레이</td>
-			<td>발사 할 비콘 배열 (예: 타사 비콘)</td>
+			<td>발사할 비콘 배열 (예: 타사 비콘)</td>
 		</tr>
 		<tr>
 			<td><code translate="No">beacon_templates[].type</code></td>
@@ -702,20 +863,20 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 <aside class="bcls-aside bcls-aside--information">
 <p>다음 참고 사항은 위 표의 필드를 참조합니다.</p>
 
-<p id="n1"><sup>[1]</sup>때<code translate="No">expected_ad_response</code>로 설정됩니다<code translate="No">vast_3_0</code> , SSAI는 Video Cloud에 정의 된 각 광고 큐 포인트에 대해 하나의 VAST 호출을 수행합니다. VMAP 및 광고 규칙의 경우 SSAI는 초기 광고 응답에서 정의된 광고 나누기를 기반으로 요청을 합니다.</p>
+<p id="n1"><sup>[1]</sup>때<code translate="No">expected_ad_response</code>로 설정<code translate="No">vast_3_0</code> , SSAI는 Video Cloud에 정의된 각 광고 큐 포인트에 대해 하나의 VAST 호출을 만듭니다. VMAP 및 광고 규칙의 경우 SSAI는 초기 광고 응답에서 정의된 광고 나누기를 기반으로 요청을 합니다.</p>
 
-<p id="n2"><sup>[ 2]</sup>비연속성 태그는 콘텐츠 비디오와 광고 세그먼트 간의 프레임 속도 인코딩이 변경되었음을 나타냅니다. 렌더링 체인을 재구성하도록 시스템에 지시합니다. 확장 가능한 SSAI를 위해 비디오 플레이어는 불연속 태그를 사용하여 HLS를 재생하고 여러 개의 기간이 포함된 MPEG DASH를 재생할 수 있어야 합니다.</p>
+<p id="n2"><sup>[2]</sup>불연속성 태그는 콘텐츠 비디오와 광고 세그먼트 간의 프레임 속도 인코딩의 변화를 나타냅니다. 렌더링 체인을 재구성하도록 시스템에 지시합니다. 확장 가능한 SSAI를 위해 비디오 플레이어는 불연속 태그를 사용하여 HLS를 재생하고 여러 개의 기간이 포함된 MPEG DASH를 재생할 수 있어야 합니다.</p>
 </aside>
 </section>
 
 <section class="bcls-section">
 <h2 id="Ad_variables">광고 변수</h2>
 
-<p><strong>템플릿 URL의</strong>변수는 변수 경로 앞뒤에 선택적 공백이있는 이중 중괄호 ( <code translate="No">{{ … }}</code> ) 로 식별됩니다. 모든 변수에는 세 개의 네임스페이스 중 하나가 접두사로 붙어있습니다.</p>
+<p><strong>템플릿</strong> URL의 변수는 변수 경로 앞뒤에 선택적 공백이 있는 이중 중괄호 ( <code translate="No">{{ … }}</code> ) 로 식별됩니다. 모든 변수에는 세 개의 네임스페이스 중 하나가 접두사로 붙어있습니다.</p>
 
 <ul>
 	<li><a href="#System_variables">시스템</a></li>
-	<li><a href="#URL_variables">URL</a></li>
+	<li><a href="#URL_variables">url</a></li>
 	<li><a href="#Metadata_variables">메타데이터</a></li>
 </ul>
 
@@ -794,7 +955,7 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 
 <h3 id="URL_variables">URL 변수</h3>
 
-<p>엔트리 포인트 VMAP/매니페스트에 제공된 쿼리 매개 변수는<code translate="No">url</code>네임 스페이스에서 사용할 수 있습니다. 다른 네임 스페이스의 변수와 달리 이러한 매개 변수는 템플릿에 삽입 할 때 URL이 인코딩되지 않습니다. 변수 값이 광고 공급자로가는 URL로 인코딩되어야하는 경우 진입 점 URL에 이중 URL로 인코딩되어야합니다.</p>
+<p>진입점 VMap/매니페스트에 제공된 쿼리 매개 변수는<code translate="No">url</code>네임스페이스에서 사용할 수 있습니다. 다른 네임 스페이스의 변수와 달리 이러한 매개 변수는 템플릿에 삽입 할 때 URL이 인코딩되지 않습니다. 변수 값이 광고 공급자로가는 URL로 인코딩되어야하는 경우 진입 점 URL에 이중 URL로 인코딩되어야합니다.</p>
 
 <p>URL 변수는 다음과 같이 식별됩니다. <code translate="No">{{url.*}}</code></p>
 
@@ -900,19 +1061,19 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 <section class="bcls-section">
 <h2 id="Client_side_macros">클라이언트 측 매크로</h2>
 
-<p>클라이언트측 광고 매크로를 사용하려는 경우<code translate="No">page</code>접두사를 사용합니다. 이러한 매크로를 사용하면 VMAP 및 서버 URL의 변수를 사용할 수 있습니다. 광고 매크로에 대한 자세한 내용은<a href="https://player.support.brightcove.com/plugins/advertising-ima3-plugin.html#Ad_macros_and_the_serverUrl">광고 매크로 및 IMA3 플러그인 문서의 광고에서 ServerURL</a>섹션을 참조하십시오.</p>
+<p>클라이언트측 광고 매크로를 사용하려는 경우<code translate="No">page</code>접두사를 사용하십시오. 이러한 매크로를 사용하면 VMAP 및 서버 URL의 변수를 사용할 수 있습니다. 광고 매크로에 대한 자세한 내용은 IMA3 플러그인을 사용한<a href="https://player.support.brightcove.com/plugins/advertising-ima3-plugin.html#Ad_macros_and_the_serverUrl">광고 문서의 광고 매크로 및 ServerURL</a>섹션을 참조하십시오.</p>
 <!-- <p>
               When you prefix an Ad variable with , then a client-side macro will be appended to the end of the VMAP and SRC fields in the catalog response, when SSAI is being used. Then, the Brightcove player will run those strings through the client-side macro replacement logic.
             </p> -->
 
 <p>클라이언트 측 매크로에는 다음과 같은 접두사가 붙습니다. <code translate="No">{{page.*}}</code></p>
 
-<p>예를 들어, <code translate="No">document.referrer</code>및<code translate="No">pageVariable</code> DOM 윈도우 변수를 추가하려면 다음과 같이 광고<code translate="No">page</code>템플릿에서 접두사를 사용합니다.</p>
+<p>예를 들어<code translate="No">document.referrer</code>및<code translate="No">pageVariable</code> DOM 창 변수를 추가하려면 다음과 같이 광고<code translate="No">page</code>템플릿에서 접두사를 붙입니다.</p>
 
 <pre>
 <code class="language-html" translate="No">https://adserver.com/{{page.document.referrer}}/{{page.pageVariable.whateverIwant}}</code></pre>
 
-<p>재생 API가<code translate="No">document.referrer</code>반환되어 VMAP 및 SRC URL에<code translate="No">pageVariable.whateverIwant</code>추가됩니다. 그런 다음 브라이트코브 플레이어는 요청을 보내기 전에 클라이언트 측 매크로 교체 논리를 실행하여 적절한 값을 바꿉니다.</p>
+<p>재생 API가<code translate="No">document.referrer</code>반환되고 VMAP 및 SRC URL에<code translate="No">pageVariable.whateverIwant</code>추가됩니다. 그런 다음 브라이트코브 플레이어는 요청을 보내기 전에 클라이언트 측 매크로 교체 논리를 실행하여 적절한 값을 바꿉니다.</p>
 
 <pre>
 <code class="language-html" translate="No">https://bolt-prefix/blah.vmap?document.referrer={document.referrer}&amp;pageVariable.whateverIwant={pageVariable.whateverIwant}</code></pre>
@@ -921,135 +1082,148 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
 <section class="bcls-section">
 <h2 id="Ad_error_beacons">광고 오류 비콘</h2>
 
-<p>SSAI를 사용할 때 발생하는 BAST 광고 오류 비콘은 광고 워크플로와 관련된 문제를 사전에 찾고 해결하는 데 도움이 될 수 있습니다. 자세한 내용은<a href="/vod/guides/ad-error-beacons-ssai.html">SSAI가 있는 광고 오류 신호</a>문서를 참조하십시오.</p>
+<p>SSAI를 사용할 때 발생하는 BAST 광고 오류 비콘은 광고 워크플로와 관련된 문제를 사전에 찾고 해결하는 데 도움이 될 수 있습니다. 자세한 내용은 SSAI가 포함된<a href="/vod/guides/ad-error-beacons-ssai.html">광고 오류 비콘</a>문서를 참조하십시오.</p>
 </section>
 </article>
 
-<!-- complete bootstrap layout -->
-    </div>
-    <div class="col-sm-2 right-side-bar">
+<!-- <div class="col-sm-2 right-side-bar" style="display: inline-block;max-width: 20%;"> -->
+  
+  <nav class="right-side-nav" id="right_side_nav">
+    <h6 class="toc">페이지 내용</h6>
+    <ul id="in_page_nav" class="list-none"></ul>
+  </nav>
+  
+<!-- </div> -->
+</div>
+</div>
+</div>
+<div class="page-content" style="background-color: rgb(1, 5, 14);">
+  <div class="container" style="width: 50%;">
+    <footer class="py-5">
+      <div class="row">
+        <div class="col-6 col-md">
+          <h5 class="h5-text">브라이트코브 지원</h5>
+          <ul class="list-unstyled text-small" style="color: white ;">
+            <li><a class="a-text" href="https://status.brightcove.com">시스템 상태</a></li>
+            <li><a class="a-text" href="https://supportportal.brightcove.com">고객 지원 문의</a></li>
+            <li><a class="a-text" href="https://support.brightcove.com/search.html">모든 문서 검색</a></li>
+          </ul>
+        </div>
       
-      <nav class="right-side-nav" id="right_side_nav">
-        <h6 class="toc">페이지 내용</h6>
-        <ul id="in_page_nav" class="list-none"></ul>
-      </nav>
+        <div class="col-6 col-md">
+          <h5 class="h5-text">교육</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="a-text" href="https://studio.support.brightcove.com/get-started/training/online-training-courses.html">온라인 코스</a></li>
+            <li><a class="a-text" href="https://studio.support.brightcove.com/get-started/training/register-training.html">강좌 등록</a></li>
+            <li><a class="a-text" href="https://academy.brightcove.com/">브라이트코브 아카데미</a></li>
+          </ul>
+        </div>
       
-    </div>
+        <div class="col-6 col-md">
+          <h5 class="h5-text">Brightcove</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="a-text" href="https://www.brightcove.com">브라이트코브닷컴</a></li>
+            <li><a class="a-text" href="https://community.brightcove.com/s/">밝은 자리 커뮤니티 포럼</a></li>
+            <li><a class="a-text" href="https://support.brightcove.com/product-updates.html">제품 릴리스 정보</a></li>
+            <li><a class="a-text" href="https://support.brightcove.com/doc-updates.html">설명서 업데이트</a></li>
+          </ul>
+        </div>
+      </div>
+    
+      <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
+      <p>© Brightcove Inc. 판권 소유.</p>
+      <a class="a-text" href="https://www.brightcove.com/en/legal/privacy">프라이버시</a><a class="a-text" href="https://www.brightcove.com/en/terms-and-conditions">이용 약관</a>
+
+      <ul class="list-unstyled d-flex">
+        <li class="ms-3"><a href="https://www.linkedin.com/company/16439" title="LinkedIn" target="_blank" class="gf-social-linkedin" style="margin-right: 1rem;"><i data-feather="linkedin" style="color:#8E9093;height: 1.25rem;"></i></a></li>
+
+        <li class="ms-3"><a href="https://twitter.com/brightcove" title="Twitter" target="_blank" class="gf-social-twitter" style="margin-right: 1rem;"><i data-feather="twitter" style="color:#8E9093;height: 1.25rem;"></i></a></li>
+
+        <li class="ms-3"><a href="https://www.facebook.com/Brightcove" title="Facebook" target="_blank" class="gf-social-facebook"><i data-feather="facebook" style="color:#8E9093;height: 1.25rem;"></i></a></li>
+      </ul>
+      </div>
+    </footer>
   </div>
 </div>
 
-<hr>
-<footer class="bcls-footer" role="contentinfo">  <div class="row">
-    <div class="region region-footer-top-center col-md-12">
-      <nav role="navigation" aria-labelledby="block-brightcovesupport-menu" id="block-brightcovesupport" class="footer-menu">
 
-        <h2>브라이트코브 지원</h2>
-
-        <ul class="menu">
-          <li>
-            <a href="https://status.brightcove.com">시스템 상태</a>
-          </li>
-          <li>
-            <a href="https://supportportal.brightcove.com/s/login/?">고객 지원 문의</a>
-          </li>
-          <li>
-            <a href="https://support.brightcove.com/">문서화</a>
-          </li>
-        </ul>
-
-      </nav>
-      <nav role="navigation" aria-labelledby="block-training-menu" id="block-training" class="footer-menu">
-
-        <h2>교육</h2>
-
-        <ul class="menu">
-          <li>
-            <a href="https://studio.support.brightcove.com/training/online-training-courses.html">온라인 강좌</a>
-          </li>
-          <li>
-            <a href="https://studio.support.brightcove.com/training/register-training.html">강좌 등록</a>
-          </li>
-          <li>
-            <a href="https://university.brightcove.com/">브라이트코브 대학교</a>
-          </li>
-        </ul>
-
-      </nav>
-      <nav role="navigation" aria-labelledby="block-brightcove-menu" class="footer-menu">
-
-        <h2>Brightcove</h2>
-
-        <ul class="menu">
-          <li>
-            <a href="https://www.brightcove.com">브라이트코브닷컴</a>
-          </li>
-          <li>
-            <a href="https://supportportal.brightcove.com/s/login/?">연락처</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </div>
-  <div class="row">
-    <div class="region region-footer-bottom-center col-md-12">
-      <div class="bcls-copyright footer-menu">
-        <table>
-          <tr>
-            <td>
-              <div id="bc_copyright" class="field field--name-field-copyright-year field--type-string field--label-hidden field--item" style="float: left;"> 브라이트코브 Inc. 모든 판권 소유.</div>
-            </td>
-            <td><a href="https://www.brightcove.com/en/legal/privacy">개인 정보 보호</a> | <a href="https://www.brightcove.com/en/terms-and-conditions">이용 약관</a></td>
-            <td>
-              <div class="gf-links-cols footer-menu">
-                <div class="gf-social"><a href="https://www.linkedin.com/company/16439" title="LinkedIn" newtab="newtab" class="gf-social-linkedin"><i class="fab fa-linkedin-in" style="font-size: 1.5rem;"></i></a><a href="https://twitter.com/brightcove" title="Twitter" newtab="newtab" class="gf-social-twitter"><i class="fab fa-twitter" style="font-size: 1.5rem;"></i></a><a href="https://www.facebook.com/Brightcove" title="Facebook" newtab="newtab" class="gf-social-facebook"><i class="fab fa-facebook-f" style="font-size: 1.5rem;"></i></a>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script>
-      
+<script translate="no">
   var searchBox = sajari.init({
     mode: "search-box",
     project: "1588255093746585379", // Set this to your project.
-    collection: "brightcove-documenation", // Set this to your collection.
+    collection: "brightcove-documentation", // Set this to your collection.
     instantPipeline: "autocomplete", // Pipeline used as you type
-    inputPlaceholder: "Search", // Input element placeholder
+    inputPlaceholder: "Search", // Input element placeholder,
+    styling: {
+      components: {
+        
+        input: {
+          container: {
+          backgroundColor: 'white',
+          }
+        
+        }
+      }
+    },
     maxSuggestions: 5, // Maximum number of suggestions to show
-    attachSearchBox: document.getElementById("nav-search-box") // DOM element to attach to
+      attachSearchBox: document.getElementById("nav-search-box") // DOM element to attach to
   });
-  
-    searchBox("sub", "pipeline.search-sent", function (_, query) {
-      window.location = "/search.html?q=" + encodeURIComponent(query.q);
-    });
+
   
 
-</script>
+
+    searchBox("sub", "pipeline.search-sent", function (_, query) {
+    window.location = "/search.html?q=" + encodeURIComponent(query.q);
+    });
+  
+  </script>
+  
+  <!-- Javascript -->          
+  <script src="/assets/s-site-assets-template-stylesheets/plugins/popper.min.js"></script>
+  <script src="/assets/s-site-assets-template-stylesheets/plugins/bootstrap/js/bootstrap.min.js"></script>  
+
+
+  <!-- Page Specific JS -->
+  <script src="/assets/s-site-assets-template-stylesheets/plugins/smoothscroll.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script> -->
+  <!-- <script src="/assets/s-site-assets-template-stylesheets/js/highlight-custom.js"></script>  -->
+  <script src="/assets/s-site-assets-template-stylesheets/plugins/simplelightbox/simple-lightbox.min.js"></script>      
+  <script src="/assets/s-site-assets-template-stylesheets/plugins/gumshoe/gumshoe.polyfills.min.js"></script> 
+  <script src="/assets/s-site-assets-template-stylesheets/js/docs.js"></script> 
+
+  <!-- original footer components -->
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/https-fix.js"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/setDate.js"></script>
+
+  <script src="/assets/s-site-assets-scripts/https-fix.js"></script>
+  <script src="/assets/s-site-assets-scripts/setDate.js"></script>
+  <script src="/assets/s-site-assets-scripts/selector.js"></script>
   
-  <script src="https://support.brightcove.com/site-assets/js/site/prism.js"></script>
+  <script src="/assets/s-site-assets-scripts/prism.js"></script>
+  <script src="/assets/s-site-assets-scripts/prism-normalize.js"></script>
   
-  <script src="https://support.brightcove.com/site-assets/js/site/site.js"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/tabs.js"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/toc.js"></script>
+  <script src="/assets/s-site-assets-scripts/site.js"></script>
+  <script src="https://support.brightcove.com/site-assets/js/learning-paths/learning-paths.js"></script>
+  <!-- <script src="/assets/s-site-assets-scripts/site.js"></script> -->
+  <script src="/assets/s-site-assets-scripts/tabs.js"></script>
+  
+  <script src="/assets/s-site-assets-scripts/toc-new-template.js"></script>
+  
   <script src="/assets/js/sites_nav.js"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/bcls-utils.js"></script>
-  <script src="https://support.brightcove.com/site-assets/js/site/local-link-fix.js"></script>
+  <script src="/assets/s-site-assets-scripts/bcls-utils.js"></script>
+  <script src="/assets/s-site-assets-scripts/local-link-fix.js"></script>
+  <script src="/assets/s-site-assets-scripts/sajari-reindex.js"></script>
   <script src="/assets/js/feedback.js"></script>
   
-  <script src="/assets/js/sajari-search-foot.js"></script>
+  <script src="/assets/s-site-assets-scripts/sajari-search-foot.js"></script>
   
+  <script translate="no">
+    feather.replace()
+  </script>
   <!-- <script src="/assets/js/sajari-index.js"></script> -->
-  <style>
+  <script src="/assets/s-site-assets-scripts/in-app.js"></script>
+  <style translate="no">
     a.sj-paginator__page-number.sj-paginator__page-number--current.css-so0ov7 {
       background-color: lightblue;
     }
@@ -1076,6 +1250,5 @@ function doGTranslate(lang_pair) {if(lang_pair.value)lang_pair=lang_pair.value;i
     }
     </style>
 
-</body>
-
-</html>
+  </body>
+</html> 
